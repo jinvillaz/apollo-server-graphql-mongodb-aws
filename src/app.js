@@ -63,7 +63,7 @@ export default class App {
    * @return {Promise} a new promise.
    */
   async loadModules() {
-    await DBManager.connect(this.config);
+    await DBManager.connect();
     Resolvers.loadModels();
     const server = new ApolloServer({
       typeDefs,

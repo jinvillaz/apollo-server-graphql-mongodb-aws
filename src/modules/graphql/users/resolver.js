@@ -52,6 +52,8 @@ export default class UserResolver {
     RoleValidator.validateAdminUser(user);
     try {
       if (!id || (id && !mongoose.Types.ObjectId.isValid(id))) return null;
+      const userFounded = await UserResolver.User.findById(id).lean().exec();
+      if (!userFounded) return userFounded;
       const { name, password, email } = query;
       if (email) {
         throw new Error('The email cannot be updated.');

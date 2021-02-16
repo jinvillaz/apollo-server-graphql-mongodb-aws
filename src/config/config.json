@@ -2,9 +2,5 @@
   "server": {
     "host": "localhost",
     "port": 4000
-  },
-  "razer": {
-    "APP_CODE": "2020112704752",
-    "APP_PIN": "usqa79012"
   }
 }

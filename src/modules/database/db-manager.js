@@ -16,7 +16,7 @@ const OPTIONS = {
  */
 class DbManager {
   constructor() {
-    this.urlConnection = 'mongodb://mongo:27017/test';
+    this.urlConnection = 'mongodb://localhost:27017/test';
   }
 
   loadModels() {
@@ -31,13 +31,10 @@ class DbManager {
 
   /**
    * Connects with mongodb.
-   * @param {Object} config data.
    * @returns {Object} mongoose object.
    */
-  async connect(config) {
-    if (config.environment === 'development' || process.env.MONGO_HOST) {
-      this.urlConnection = 'mongodb://localhost:27017/test';
-    }
+  async connect() {
+    this.urlConnection = process.env.MONGO_URL;
     await mongoose.connect(this.urlConnection, OPTIONS);
     logger.info('Successful database connection.');
     this.loadModels();

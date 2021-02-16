@@ -1,5 +1,5 @@
 # Prepare environment
-FROM node:12-alpine AS BUILD_IMAGE
+FROM node:14-alpine AS BUILD_IMAGE
 
 # install dependencies of system and remove from cache
 RUN apk update && apk add bash curl && rm -rf /var/cache/apk/*
@@ -31,23 +31,18 @@ RUN npm prune --production
 # node-prune removing unnecessary files from the node_modules
 RUN /usr/local/bin/node-prune
 
-# build application react
-RUN cd react-app && yarn && yarn build
-
 # remove unused dependencies manually
 # RUN rm -rf node_modules/rxjs/src/
 
 # final result
-FROM node:12-alpine
+FROM node:14-alpine
 
 WORKDIR /usr/src/app
 
 # copy from build image
 COPY --from=BUILD_IMAGE /usr/src/app/dist ./dist
 COPY --from=BUILD_IMAGE /usr/src/app/node_modules ./node_modules
-COPY --from=BUILD_IMAGE /usr/src/app/react-app/build ./dist/public
 COPY --from=BUILD_IMAGE /usr/src/app/package.json .
-RUN mkdir /usr/src/app/uploads
 
 # Sets Arguments by default
 ARG APP_VERSION=unknown
@@ -66,4 +61,4 @@ USER node
 
 EXPOSE 4000
 
-CMD [ "yarn", "run", "starProd" ]
+CMD [ "yarn", "run", "startProd" ]

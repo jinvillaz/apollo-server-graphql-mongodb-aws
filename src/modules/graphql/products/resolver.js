@@ -5,6 +5,7 @@ import { UserInputError } from 'apollo-server-express';
 import RoleValidator from '../role-validator';
 import { CreateValidator, UpdateValidator } from './schema-validator';
 import Utils from '../../../utils/utils';
+import notificationHandler from '../../notification';
 
 const logger = log4js.getLogger('ProductResolver');
 
@@ -17,9 +18,12 @@ export default class ProductResolver {
 
   static SearchProduct;
 
+  static Users;
+
   static loadModels() {
     ProductResolver.Product = mongoose.model('Product');
     ProductResolver.SearchProduct = mongoose.model('SearchProduct');
+    ProductResolver.Users = mongoose.model('User');
   }
 
   static async getProducts(_, args) {
@@ -36,13 +40,13 @@ export default class ProductResolver {
     const options = {
       page,
       limit,
+      lean: true,
       customLabels: {
         docs: 'products',
         page: 'currentPage',
       },
     };
-    const result = await ProductResolver.Product.paginate(query, options);
-    return result;
+    return await ProductResolver.Product.paginate(query, options);
   }
 
   static async getProduct(_, { id }, { user }) {
@@ -75,12 +79,18 @@ export default class ProductResolver {
     RoleValidator.validateAdminUser(user);
     try {
       if (!id || (id && !mongoose.Types.ObjectId.isValid(id))) return null;
+      const oldData = await ProductResolver.Product.findById(id).lean().exec();
+      if (!oldData) return oldData;
       query = Utils.getValidData(query);
       UpdateValidator.validateSync(query);
+      const newData = { ...query };
       query = {
         $set: { ...query },
       };
-      return await ProductResolver.Product.findByIdAndUpdate(id, query, { new: true }).exec();
+      const result = await ProductResolver.Product.findByIdAndUpdate(id, query, { new: true }).lean().exec();
+      const users = await ProductResolver.Users.find({ $and: [{ role: 'admin' }, { _id: { $ne: user.id } }] });
+      notificationHandler.sentProductNotification(users, oldData, newData);
+      return result;
     } catch (error) {
       throw new UserInputError(error.message);
     }

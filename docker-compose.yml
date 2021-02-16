@@ -1,11 +1,34 @@
 version: '3.8'
 services:
-  razer_app:
-    image: backend_app
-    container_name: backend_app
+  lunabackend:
+    image: lunabackend
+    container_name: lunabackend
     restart: always
     ports:
       - "4000:4000"
     environment:
-      - APP_CODE=${APP_CODE}
-      - APP_PIN=${APP_PIN}
+      - MONGO_URL=${MONGO_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+      - AWS_SENDER_EMAIL=${AWS_SENDER_EMAIL}
+      - AWS_REGION=${AWS_REGION}
+    depends_on:
+      - mongodb
+    networks:
+      - backend
+  mongodb:
+    container_name: mongodb
+    volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - ./.mongo-data:/data/db
+    restart: 'always'
+    ports:
+        - '27017:27017'
+    image: dannyben/alpine-mongo
+    tty: true
+    networks:
+      - backend
+networks:
+  backend:
+    driver: bridge
