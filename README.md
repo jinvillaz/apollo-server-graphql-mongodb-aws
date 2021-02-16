@@ -7,6 +7,7 @@
 ```sh
 nodejs 14.15.4
 npm install -g yarn
+mongodb 5
 ```
 
 ### Install dependencies
@@ -14,6 +15,9 @@ npm install -g yarn
 ```sh
 yarn
 ```
+
+## .env File
+You need to create the .env file like .env.example
 
 ## Yarn tasks
 
@@ -45,7 +49,10 @@ docker build -t lunabackend .
 For test the image
 
 ```sh
-docker run --name lunabackend -p 5050:5050 -d lunabackend
-curl -i localhost:5050
+docker run --name lunabackend -p 4000:4000 -d lunabackend
+curl -i localhost:4000
 docker stop lunabackend
 ```
+
+## Graphql 
+There is a demo running in http://3.93.175.180:4000/graphql
