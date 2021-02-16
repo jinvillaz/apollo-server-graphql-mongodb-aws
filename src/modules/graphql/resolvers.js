@@ -20,6 +20,7 @@ export class Resolvers {
         updateUser: UserResolver.updateUser,
         deleteUser: UserResolver.deleteUser,
         login: UserResolver.login,
+        logout: UserResolver.logout,
         addProduct: ProductResolver.addProduct,
         updateProduct: ProductResolver.updateProduct,
         deleteProduct: ProductResolver.deleteProduct,

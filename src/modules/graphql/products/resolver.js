@@ -2,7 +2,7 @@ import log4js from 'log4js';
 import scapeStringRegex from 'escape-string-regexp';
 import mongoose from 'mongoose';
 import { UserInputError } from 'apollo-server-express';
-import RoleValidator from '../role-validator';
+import { UserValidator } from '../user-validator';
 import { CreateValidator, UpdateValidator } from './schema-validator';
 import Utils from '../../../utils/utils';
 import notificationHandler from '../../notification';
@@ -64,7 +64,7 @@ export default class ProductResolver {
   }
 
   static async addProduct(_, { query }, { user }) {
-    RoleValidator.validateAdminUser(user);
+    UserValidator.validateAdminUser(user);
     try {
       CreateValidator.validateSync(query);
       const { name, sku, brand, price } = query;
@@ -76,7 +76,7 @@ export default class ProductResolver {
   }
 
   static async updateProduct(_, { id, query }, { user }) {
-    RoleValidator.validateAdminUser(user);
+    UserValidator.validateAdminUser(user);
     try {
       if (!id || (id && !mongoose.Types.ObjectId.isValid(id))) return null;
       const oldData = await ProductResolver.Product.findById(id).lean().exec();
@@ -89,7 +89,9 @@ export default class ProductResolver {
       };
       const result = await ProductResolver.Product.findByIdAndUpdate(id, query, { new: true }).lean().exec();
       const users = await ProductResolver.Users.find({ $and: [{ role: 'admin' }, { _id: { $ne: user.id } }] });
-      notificationHandler.sentProductNotification(users, oldData, newData);
+      if (!Utils.compare(oldData, newData)) {
+        notificationHandler.sentProductNotification(users, oldData, newData);
+      }
       return result;
     } catch (error) {
       throw new UserInputError(error.message);
@@ -97,7 +99,7 @@ export default class ProductResolver {
   }
 
   static deleteProduct(_, { id }, { user }) {
-    RoleValidator.validateAdminUser(user);
+    UserValidator.validateAdminUser(user);
     if (!id || (id && !mongoose.Types.ObjectId.isValid(id))) return null;
     return ProductResolver.Product.findByIdAndDelete(id).exec();
   }

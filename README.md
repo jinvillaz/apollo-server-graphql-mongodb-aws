@@ -39,13 +39,13 @@ docker build -t backend --build-arg APP_VERSION=${APP_VERSION} --build-arg RELEA
 Without params
 
 ```sh
-docker build -t backend .
+docker build -t backendluna .
 ```
 
 For test the image
 
 ```sh
-docker run --name backend -p 5050:5050 -d backend
+docker run --name backendluna -p 5050:5050 -d backendluna
 curl -i localhost:5050
-docker stop backend
+docker stop backendluna
 ```

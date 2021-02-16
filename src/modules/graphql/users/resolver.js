@@ -4,10 +4,11 @@ import log4js from 'log4js';
 import scapeStringRegex from 'escape-string-regexp';
 import mongoose from 'mongoose';
 import { AuthenticationError, UserInputError } from 'apollo-server-express';
-import RoleValidator from '../role-validator';
+import { UserValidator } from '../user-validator';
 import { CreateValidator, UpdateValidator } from './schema-validator';
 
 const logger = log4js.getLogger('UserResolver');
+const ANONYMUS = 'anonymus';
 
 export default class UserResolver {
   static User;
@@ -17,7 +18,7 @@ export default class UserResolver {
   }
 
   static getUsers(_, { query }, { user }) {
-    RoleValidator.validateAdminUser(user);
+    UserValidator.validateAdminUser(user);
     if (!query || (query && query.length === 0)) {
       query = {};
     } else {
@@ -30,17 +31,16 @@ export default class UserResolver {
   }
 
   static getUser(_, { id }, { user }) {
-    RoleValidator.validateAdminUser(user);
+    UserValidator.validateAdminUser(user);
     if (!id || (id && !mongoose.Types.ObjectId.isValid(id))) return null;
     return UserResolver.User.findById(id);
   }
 
   static async addUser(_, { query }, { user }) {
-    RoleValidator.validateAdminUser(user);
+    UserValidator.validateAdminUser(user);
     try {
       CreateValidator.validateSync(query);
       const { name, email, password } = query;
-      logger.info(name, email, password);
       const userToSave = new UserResolver.User({ name, email, password: await bcrypt.hash(password, 10) });
       return await userToSave.save();
     } catch (error) {
@@ -49,7 +49,7 @@ export default class UserResolver {
   }
 
   static async updateUser(_, { id, query }, { user }) {
-    RoleValidator.validateAdminUser(user);
+    UserValidator.validateAdminUser(user);
     try {
       if (!id || (id && !mongoose.Types.ObjectId.isValid(id))) return null;
       const userFounded = await UserResolver.User.findById(id).lean().exec();
@@ -75,7 +75,7 @@ export default class UserResolver {
   }
 
   static deleteUser(_, { id }, { user }) {
-    RoleValidator.validateAdminUser(user);
+    UserValidator.validateAdminUser(user);
     if (!id || (id && !mongoose.Types.ObjectId.isValid(id))) return null;
     return UserResolver.User.findByIdAndDelete(id).exec();
   }
@@ -98,6 +98,7 @@ export default class UserResolver {
         algorithm: 'HS256',
         expiresIn: '1d',
       });
+      UserResolver.User.findByIdAndUpdate(user._id, { $push: { tokens: token } }).exec();
       return {
         token,
         user,
@@ -105,5 +106,11 @@ export default class UserResolver {
     } catch (error) {
       throw new AuthenticationError(error.message);
     }
+  }
+
+  static async logout(_, args, { user, token }) {
+    if (user.role === ANONYMUS) throw new AuthenticationError('Invalid credentials');
+    await UserResolver.User.findOneAndUpdate({ tokens: token }, { $pull: { tokens: token } }, { multi: false }).exec();
+    return 'Logout was success,';
   }
 }

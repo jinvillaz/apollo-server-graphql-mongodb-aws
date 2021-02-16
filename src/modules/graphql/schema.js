@@ -56,7 +56,7 @@ export const typeDefs = gql`
   type Query {
     getUsers(query: String): [User]
     getUser(id: ID!): User
-    getProducts(query: String, price: Float, page: Int, limit: Int): ProductsResult
+    getProducts(query: String, page: Int, limit: Int): ProductsResult
     getProduct(id: ID!): Product
   }
 
@@ -70,6 +70,7 @@ export const typeDefs = gql`
     updateUser(id: ID!, query: InputForUpdateUser!): User
     deleteUser(id: ID!): User
     login(email: String!, password: String!): AuthPayload!
+    logout(id: ID!): String!
     addProduct(query: InputForCreateProduct!): Product
     updateProduct(id: ID!, query: InputForUpdateProduct!): Product
     deleteProduct(id: ID!): Product

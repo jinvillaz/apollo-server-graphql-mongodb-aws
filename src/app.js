@@ -7,8 +7,7 @@ import bodyParser from 'body-parser';
 import errorHandler from 'errorhandler';
 import { ApolloServer } from 'apollo-server-express';
 import DBManager from './modules/database';
-import { typeDefs, Resolvers } from './modules/graphql';
-import Utils from './utils/utils';
+import { typeDefs, Resolvers, UserValidator } from './modules/graphql';
 
 const logger = log4js.getLogger('App');
 
@@ -68,7 +67,7 @@ export default class App {
     const server = new ApolloServer({
       typeDefs,
       resolvers: Resolvers.getResolvers(),
-      context: ({ req }) => Utils.getUser(req),
+      context: UserValidator.getUser,
       debug: false,
     });
     server.applyMiddleware({ app: this.app });
