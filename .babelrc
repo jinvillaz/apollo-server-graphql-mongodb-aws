@@ -1,0 +1,10 @@
+{
+  "presets": [
+    "@babel/env"
+  ],
+  "plugins": [
+    "@babel/plugin-transform-runtime",
+    "@babel/transform-arrow-functions",
+    "@babel/plugin-proposal-class-properties"
+  ]
+}

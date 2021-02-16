@@ -1,0 +1,111 @@
+{
+  "name": "backend-technical-test",
+  "version": "0.0.1",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "license": "ISC",
+  "private": true,
+  "scripts": {
+    "prebuild": "rm -rf dist",
+    "build": "babel src -d dist --ignore 'src/**/*.spec.js' --copy-files --no-copy-ignored",
+    "dev": "env-cmd --silent nodemon ./src/index.js --exec 'yarn run eslint && babel-node --inspect=0.0.0.0:9230'",
+    "prestart": "yarn run build",
+    "start": "env-cmd --silent node dist/index.js",
+    "starProd": "env-cmd --silent node dist/index.js",
+    "test": "jest --runInBand --verbose",
+    "coverage": "jest --coverage --runInBand --verbose",
+    "test:auto": "jest --watchAll",
+    "eslint": "eslint  --color ./src; exit 0",
+    "lint": "eslint  --color ./src"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn run lint",
+      "pre-push": "yarn run test && yarn run coverage"
+    }
+  },
+  "dependencies": {
+    "@babel/runtime": "~7.12.5",
+    "apollo-server-express": "~2.21.0",
+    "await-to-js": "~2.1.1",
+    "bcryptjs": "~2.4.3",
+    "body-parser": "~1.19.0",
+    "cors": "~2.8.5",
+    "env-cmd": "~10.1.0",
+    "errorhandler": "~1.5.1",
+    "escape-string-regexp": "~4.0.0",
+    "express": "~4.17.1",
+    "graphql": "~15.5.0",
+    "jsonwebtoken": "~8.5.1",
+    "log4js": "~6.3.0",
+    "mongoose": "~5.10.1",
+    "mongoose-paginate-v2": "~1.3.14",
+    "mongoose-unique-validator": "~2.0.3",
+    "morgan": "~1.10.0",
+    "superagent": "~6.1.0",
+    "yup": "~0.32.8"
+  },
+  "devDependencies": {
+    "@babel/cli": "~7.12.10",
+    "@babel/core": "~7.12.10",
+    "@babel/node": "~7.12.10",
+    "@babel/plugin-proposal-class-properties": "~7.12.13",
+    "@babel/plugin-transform-runtime": "~7.12.10",
+    "@babel/preset-env": "~7.12.11",
+    "@babel/register": "~7.12.10",
+    "@types/jest": "~26.0.19",
+    "@types/node": "~14.14.16",
+    "babel-eslint": "~10.1.0",
+    "babel-jest": "~26.6.3",
+    "eslint": "~7.16.0",
+    "eslint-config-prettier": "~7.1.0",
+    "eslint-plugin-import": "~2.22.1",
+    "eslint-plugin-jest": "~24.1.3",
+    "eslint-plugin-node": "~11.1.0",
+    "eslint-plugin-prettier": "~3.3.0",
+    "husky": "~4.3.6",
+    "jest": "~26.6.3",
+    "nodemon": "~2.0.6",
+    "prettier": "~2.2.1"
+  },
+  "contributors": [
+    {
+      "name": "Jhonatan Villanueva",
+      "email": "jin.villaz@gmail.com"
+    }
+  ],
+  "engines": {
+    "node": ">=14"
+  },
+  "nodemonConfig": {
+    "verbose": false,
+    "watch": [
+      "src/**/*.js"
+    ],
+    "ignore": [
+      "node_modules/*",
+      "src/**/*.spec.js"
+    ],
+    "delay": "1000"
+  },
+  "jest": {
+    "transform": {
+      ".*": "<rootDir>/node_modules/babel-jest"
+    },
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/**/*.spec.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 0,
+        "functions": 0,
+        "lines": 0,
+        "statements": 0
+      }
+    }
+  }
+}

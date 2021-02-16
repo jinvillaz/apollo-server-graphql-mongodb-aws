@@ -1,0 +1,12 @@
+node_modules
+npm-debug.log
+Dockerfile*
+docker-compose*
+.dockerignore
+.git*
+README.md
+LICENSE
+.vscode
+.env*
+.editorconfig
+wait-for-it.sh
