@@ -49,10 +49,21 @@ docker build -t lunabackend .
 For test the image
 
 ```sh
-docker run --name lunabackend -p 4000:4000 -d lunabackend
-curl -i localhost:4000
-docker stop lunabackend
+docker-compose up -d
 ```
 
-## Graphql 
-There is a demo running in http://3.93.175.180:4000/graphql
+# Default Data
+In order to have default user and some products.
+you need to restore data with file db.dump
+
+```sh
+docker exec -ti mongodb sh
+apk add --no-cache mongodb-tools
+```
+exit from container mongodb
+and execute the next command
+
+```sh
+docker exec -i mongodb sh -c 'mongorestore --archive' < db.dump
+```
+
