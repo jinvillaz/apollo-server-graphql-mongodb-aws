@@ -1,4 +1,4 @@
-# Backend technical test
+# Backend node.js + apollo server + graphql + mongodb + AWS notification
 
 ## Installation
 

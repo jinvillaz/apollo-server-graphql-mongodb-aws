@@ -1,5 +1,5 @@
 {
-  "name": "backend-technical-test",
+  "name": "apollo-server-graphql-mongodb-aws",
   "version": "0.0.1",
   "main": "src/index.js",
   "repository": {
